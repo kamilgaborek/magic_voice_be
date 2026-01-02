@@ -6,5 +6,8 @@ edition = "2024"
 [dependencies]
 axum = "0.7"
 tokio = { version = "1", features = ["full"] }
-
-
+tower = "0.4"
+hyper = "0.14"
+dotenvy = "0.15"
+config = "0.14"
+serde = { version = "1.0", features = ["derive"] }

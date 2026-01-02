@@ -8,14 +8,17 @@ use axum::{
     routing::get,
     Router,
 };
+use config::AppConfig;
 
 #[tokio::main]
 async fn main() {
-    // build our application with a single route
+    // Load configuration from .env, environment, and reference.toml
+    let config = AppConfig::from_env_and_file().expect("Failed to load configuration");
+
     let app = Router::new().route("/", get(|| async { "Hello, World!" }));
 
-    // run our app with hyper, listening on localhost port 3000
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
-    println!("Server running on http://127.0.0.1:3000");
+    let addr = format!("127.0.0.1:{}", config.server_port);
+    let listener = tokio::net::TcpListener::bind(&addr).await.expect("Failed to bind port");
+    println!("Server running on http://{} (env: {}, db: {})", addr, config.environment, config.database_url);
     axum::serve(listener, app).await.unwrap();
 }

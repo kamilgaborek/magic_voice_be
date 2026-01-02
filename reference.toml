@@ -1,0 +1,5 @@
+# Default configuration values for Magic Voice Backend
+server_port = 3000
+database_url = "postgres://user:password@localhost/db"
+environment = "dev"
+

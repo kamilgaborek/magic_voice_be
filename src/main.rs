@@ -11,6 +11,10 @@ use axum::{
 use config::AppConfig;
 use db::{create_pool, PgPool};
 use axum::extract::State;
+use axum::response::IntoResponse;
+use axum::http::StatusCode;
+use api::openapi::ApiDoc;
+use utoipa::OpenApi;
 
 #[tokio::main]
 async fn main() {
@@ -22,9 +26,13 @@ async fn main() {
         .await
         .expect("Failed to connect to the database");
 
+    let openapi_json = ApiDoc::openapi().to_json().expect("Failed to serialize OpenAPI spec");
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
         .route("/health", get(api::health))
+        .route("/openapi.json", get(|| async move {
+            (StatusCode::OK, [("content-type", "application/json")], openapi_json.clone())
+        }))
         .with_state(pool.clone());
 
     let addr = format!("127.0.0.1:{}", config.server_port);

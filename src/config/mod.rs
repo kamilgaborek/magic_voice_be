@@ -10,7 +10,7 @@ pub struct AppConfig {
 impl AppConfig {
     pub fn from_env_and_file() -> Result<Self, config::ConfigError> {
         dotenvy::dotenv().ok();
-        let mut settings = config::Config::builder()
+        let settings = config::Config::builder()
             .add_source(config::File::with_name("reference"))
             .add_source(config::Environment::default().separator("_"))
             .build()?;

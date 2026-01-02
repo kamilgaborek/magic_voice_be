@@ -15,7 +15,9 @@ async fn main() {
     // Load configuration from .env, environment, and reference.toml
     let config = AppConfig::from_env_and_file().expect("Failed to load configuration");
 
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let app = Router::new()
+        .route("/", get(|| async { "Hello, World!" }))
+        .route("/health", get(api::health));
 
     let addr = format!("127.0.0.1:{}", config.server_port);
     let listener = tokio::net::TcpListener::bind(&addr).await.expect("Failed to bind port");

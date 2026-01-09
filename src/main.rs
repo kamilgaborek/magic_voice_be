@@ -13,8 +13,11 @@ use db::{create_pool, PgPool};
 use axum::extract::State;
 use axum::response::IntoResponse;
 use axum::http::StatusCode;
+use sqlx::migrate::Migrator;
 use api::openapi::ApiDoc;
 use utoipa::OpenApi;
+
+static MIGRATOR: Migrator = sqlx::migrate!("./db/migrations");
 
 #[tokio::main]
 async fn main() {
@@ -25,6 +28,9 @@ async fn main() {
     let pool = create_pool(&config.database_url)
         .await
         .expect("Failed to connect to the database");
+
+    // Run database migrations
+    MIGRATOR.run(&pool).await.expect("Failed to run database migrations");
 
     let openapi_json = ApiDoc::openapi().to_json().expect("Failed to serialize OpenAPI spec");
     let app = Router::new()
